@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"unicode/utf8"
 )
@@ -55,8 +56,63 @@ func main() {
 	var myBoolean bool = false
 	fmt.Println(myBoolean)
 
-	// =================================================
-
 	const myConst string = "const value" // cannot be changed later and should always have a value assigned
 
+	// =================================================
+
+	// FUNCTIONS & CONSTROL STRUCTURES
+	var printValue string = "Hello world"
+	printMe(printValue)
+
+	var numerator int = 1
+	var denominator int = 1
+	var result, remainder, err = intDivision(numerator, denominator)
+
+	// handle using if else statements
+	fmt.Println("Handle with if else")
+	if err != nil {
+		fmt.Println(err.Error())
+	} else if remainder == 0 {
+		fmt.Printf("The result of the integer division is %v \n", result)
+	} else {
+		fmt.Printf("The result of the integer division is %v with remainder %v \n", result, remainder)
+	}
+
+	// handle using switch
+	fmt.Println("Handle with switch")
+	switch {
+	case err != nil:
+		fmt.Println(err.Error())
+	case remainder == 0:
+		fmt.Printf("The result of the integer division is %v \n", result)
+	default:
+		fmt.Printf("The result of the integer division is %v with remainder %v \n", result, remainder)
+	}
+
+	// handle using switch with a variable
+	fmt.Println("Handle with switch with a variable")
+	switch remainder {
+	case 0:
+		fmt.Printf("The result of the integer division is %v \n and the remainder is 0 \n", result)
+	case 1, 2:
+		fmt.Printf("The result of the integer division is %v \n and the remainder is 1 or 2 \n", result)
+	default:
+		fmt.Printf("The result of the integer division is %v \n and the remainder is %v \n", result, remainder)
+	}
+
+	fmt.Printf("The result of the integer divisin is %v with remainder %v \n", result, remainder)
+}
+
+func printMe(printValue string) {
+	fmt.Println(printValue)
+}
+
+func intDivision(numerator int, denominator int) (int, int, error) {
+	var err error
+	if denominator == 0 {
+		err = errors.New("Cannot Devide by Zero")
+	}
+	var result int = numerator / denominator
+	var remainder int = numerator % denominator
+	return result, remainder, err
 }
