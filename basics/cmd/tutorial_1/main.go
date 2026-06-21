@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"time"
 	"unicode/utf8"
 )
 
@@ -101,6 +102,111 @@ func main() {
 	}
 
 	fmt.Printf("The result of the integer divisin is %v with remainder %v \n", result, remainder)
+
+	// ==============================================================
+	// ARRAYS, SLICES, MAPS AND LOOPING
+
+	// ARRAYS
+	var intArr [3]int32      // 4 bytes x 3 = 12 bytes
+	fmt.Println(intArr)      // prints [0 0 0]
+	fmt.Println(intArr[0])   // prints 0
+	fmt.Println(intArr[1:3]) // prints [0 0]
+
+	intArr[0] = 123
+	fmt.Println(intArr) // prints [123 0 0]
+
+	// print memory address
+	fmt.Println(&intArr[0]) // prints memory address
+	fmt.Println(&intArr[1]) // prints memory address
+	fmt.Println(&intArr[2]) // prints memory address
+	// memory location of array is contiguous
+
+	// initialize an array
+	var intArr2 [3]int32 = [3]int32{1, 2, 3}
+	fmt.Println(intArr2)
+
+	// or
+	intArr3 := [3]int32{1, 2, 3} // or [...]int32{1, 2, 3}
+	fmt.Println(intArr3)
+
+	// SLICES
+	var intSlice []int32 = []int32{1, 2, 3, 5}
+	fmt.Printf("The length is %v with capacity %v \n", len(intSlice), cap(intSlice))
+	intSlice = append(intSlice, 7)
+	fmt.Printf("The length is %v with capacity %v \n", len(intSlice), cap(intSlice))
+	// note: slices look for the available space, if not it allocate the same number of batch positions again
+	// ex: intSlice has only 4 indexes at the first place but it looks for an empty space to add 7
+	// then it allocate another 4 spaces. finally the capacity is 8. ----> [1 2 3 5 7 * * *]. but cant access additional indexes
+
+	// append another slice
+	var exSlice []int32 = []int32{6, 7, 8}
+	intSlice = append(intSlice, exSlice...)
+	fmt.Println(intSlice)
+
+	// initialize a slice
+	var intSlice3 []int32 = make([]int32, 3, 8) // length 3 , capacity 8. if capacity isnt provided, capacity would be the length of the slice
+	fmt.Println(intSlice3)
+	fmt.Printf("Length %v and Capacity %v \n", len(intSlice3), cap(intSlice3))
+
+	// MAP
+	var myMap1 map[string]uint8 = make(map[string]uint8)
+	fmt.Println(myMap1)
+
+	var myMap2 = map[string]uint8{"Adam": 48, "Sarah": 45}
+	fmt.Println(myMap2)
+	fmt.Println(myMap2["Adam"])  // prints 48
+	fmt.Println(myMap2["Jason"]) // prints 0
+
+	// how to omit default value if the key doesnt exists
+	var age, ok = myMap2["Jason"]
+	if ok {
+		fmt.Printf("The age is %v \n", age)
+	} else {
+		fmt.Printf("Invalid name \n")
+	}
+
+	delete(myMap2, "Adam") // delete a key with value from a map
+	fmt.Println(myMap2)
+
+	// ITERATE over MAP , ARRAY or SLICE
+
+	// over map
+	for name, age := range myMap2 {
+		fmt.Printf("Name: %v, Age: %v \n", name, age)
+	}
+
+	// over array/slices
+	for i, v := range intArr {
+		fmt.Printf("Index: %v, Value: %v \n", i, v)
+	}
+
+	// GO doesnt have a while loop. but we can create using for
+	var i int = 0
+	for {
+		if i >= 5 {
+			break
+		}
+		fmt.Println(i)
+		i = i + 1
+	}
+
+	// or
+	for i := 0; i < 5; i++ {
+		fmt.Println(i)
+	}
+
+	// understand the loop over slices
+	var n int = 1000000
+	var testSlice = []int{}            // without pre allocation
+	var testSlice2 = make([]int, 0, n) // with preallocation
+
+	fmt.Printf("Total time without preallocation: %v \n", timeLoop(testSlice, n))
+	fmt.Printf("Total time with preallocation: %v \n", timeLoop(testSlice2, n))
+
+	// this prints (these values can be changed) --> this says preallocation increases the performance
+	//Total time without preallocation: 22.837445ms
+	//Total time with preallocation: 5.187835ms
+
 }
 
 func printMe(printValue string) {
@@ -115,4 +221,12 @@ func intDivision(numerator int, denominator int) (int, int, error) {
 	var result int = numerator / denominator
 	var remainder int = numerator % denominator
 	return result, remainder, err
+}
+
+func timeLoop(slice []int, n int) time.Duration {
+	var t0 = time.Now()
+	for len(slice) < n {
+		slice = append(slice, 1)
+	}
+	return time.Since(t0)
 }
